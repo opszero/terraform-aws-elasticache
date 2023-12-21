@@ -1,5 +1,5 @@
 module "labels" {
-  source      = "git::https://github.com/opz0/terraform-aws-labels.git?ref=v1.0.0"
+  source      = "git::https://github.com/cypik/terraform-aws-labels.git?ref=v1.0.0"
   enabled     = var.enable
   name        = var.name
   repository  = var.repository
@@ -10,8 +10,7 @@ module "labels" {
 }
 
 resource "aws_security_group" "default" {
-  count = var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
-
+  count       = var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
   name        = format("%s-sg", module.labels.id)
   vpc_id      = var.vpc_id
   description = var.sg_description
@@ -23,8 +22,7 @@ resource "aws_security_group" "default" {
 
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress" {
-  count = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false && var.egress_rule == true) ? 1 : 0
-
+  count             = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false && var.egress_rule == true) ? 1 : 0
   description       = var.sg_egress_description
   type              = "egress"
   from_port         = 0
@@ -35,8 +33,7 @@ resource "aws_security_group_rule" "egress" {
 }
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress_ipv6" {
-  count = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false) && var.egress_rule == true ? 1 : 0
-
+  count             = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false) && var.egress_rule == true ? 1 : 0
   description       = var.sg_egress_ipv6_description
   type              = "egress"
   from_port         = 0
@@ -46,8 +43,7 @@ resource "aws_security_group_rule" "egress_ipv6" {
   security_group_id = join("", aws_security_group.default[*].id)
 }
 resource "aws_security_group_rule" "ingress" {
-  count = length(var.allowed_ip) > 0 == true && length(var.sg_ids) < 1 ? length(compact(var.allowed_ports)) : 0
-
+  count             = length(var.allowed_ip) > 0 == true && length(var.sg_ids) < 1 ? length(compact(var.allowed_ports)) : 0
   description       = var.sg_ingress_description
   type              = "ingress"
   from_port         = element(var.allowed_ports, count.index)
@@ -58,8 +54,7 @@ resource "aws_security_group_rule" "ingress" {
 }
 
 resource "aws_kms_key" "default" {
-  count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
-
+  count                    = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
   description              = var.kms_description
   key_usage                = var.key_usage
   deletion_window_in_days  = var.deletion_window_in_days
@@ -72,8 +67,7 @@ resource "aws_kms_key" "default" {
 }
 
 resource "aws_kms_alias" "default" {
-  count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
-
+  count         = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
   name          = coalesce(var.alias, format("alias/%v", module.labels.id))
   target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default[*].id) : var.kms_key_id
 }
@@ -114,10 +108,8 @@ resource "aws_elasticache_subnet_group" "default" {
   name        = format("%s-subnet-group", module.labels.id)
   subnet_ids  = var.subnet_ids
   description = var.subnet_group_description
-
-  tags = module.labels.tags
+  tags        = module.labels.tags
 }
-
 
 resource "random_password" "auth_token" {
   count   = var.auth_token_enable && var.auth_token == null ? 1 : 0
@@ -126,8 +118,7 @@ resource "random_password" "auth_token" {
 }
 
 resource "aws_elasticache_replication_group" "cluster" {
-  count = var.enable && var.cluster_replication_enabled ? 1 : 0
-
+  count                      = var.enable && var.cluster_replication_enabled ? 1 : 0
   engine                     = var.engine
   replication_group_id       = module.labels.id
   description                = var.replication_group_description
@@ -192,8 +183,7 @@ resource "aws_elasticache_cluster" "default" {
 }
 
 resource "aws_route53_record" "elasticache" {
-  count = var.enable && var.route53_record_enabled ? 1 : 0
-
+  count   = var.enable && var.route53_record_enabled ? 1 : 0
   name    = var.dns_record_name
   type    = var.route53_type
   ttl     = var.route53_ttl
@@ -203,8 +193,7 @@ resource "aws_route53_record" "elasticache" {
 
 
 resource "aws_ssm_parameter" "secret" {
-  count = var.auth_token_enable ? 1 : 0
-
+  count       = var.auth_token_enable ? 1 : 0
   name        = format("/%s/%s/auth-token", var.environment, var.name)
   description = var.ssm_parameter_description
   type        = var.ssm_parameter_type
@@ -213,8 +202,7 @@ resource "aws_ssm_parameter" "secret" {
 }
 
 resource "aws_ssm_parameter" "secret-endpoint" {
-  count = var.enable && var.ssm_parameter_endpoint_enabled ? 1 : 0
-
+  count       = var.enable && var.ssm_parameter_endpoint_enabled ? 1 : 0
   name        = format("/%s/%s/endpoint", var.environment, var.name)
   description = var.ssm_parameter_description
   type        = var.ssm_parameter_type
@@ -223,8 +211,7 @@ resource "aws_ssm_parameter" "secret-endpoint" {
 }
 
 resource "aws_route53_record" "memcached_route_53" {
-  count = var.memcached_route53_record_enabled ? 1 : 0
-
+  count   = var.memcached_route53_record_enabled ? 1 : 0
   name    = var.dns_record_name
   zone_id = var.route53_zone_id
   type    = var.route53_type
@@ -233,8 +220,7 @@ resource "aws_route53_record" "memcached_route_53" {
 }
 
 resource "aws_ssm_parameter" "memcached_secret-endpoint" {
-  count = var.memcached_ssm_parameter_endpoint_enabled ? 1 : 0
-
+  count       = var.memcached_ssm_parameter_endpoint_enabled ? 1 : 0
   name        = format("/%s/%s/memcached-endpoint", var.environment, var.name)
   description = var.ssm_parameter_description
   type        = var.ssm_parameter_type

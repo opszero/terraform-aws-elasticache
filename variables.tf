@@ -1,5 +1,3 @@
-#Module      : LABEL
-#Description : Terraform label module variables.
 variable "name" {
   type        = string
   default     = ""
@@ -8,7 +6,7 @@ variable "name" {
 
 variable "repository" {
   type        = string
-  default     = "https://github.com/opz0/terraform-aws-elasticache"
+  default     = "https://github.com/cypik/terraform-aws-elasticache"
   description = "Terraform current module repo"
 
   validation {
@@ -25,7 +23,7 @@ variable "environment" {
 
 variable "label_order" {
   type        = list(any)
-  default     = []
+  default     = ["name", "environment"]
   description = "Label order, e.g. `name`,`application`."
 }
 
@@ -37,8 +35,8 @@ variable "extra_tags" {
 
 variable "managedby" {
   type        = string
-  default     = ""
-  description = "ManagedBy, eg  'Opz0'."
+  default     = "cypik"
+  description = "ManagedBy, eg  'cypik'."
 }
 
 variable "enable" {
@@ -193,8 +191,6 @@ variable "cluster_replication_enabled" {
   description = "(Redis only) Enabled or disabled replication_group for redis cluster."
 }
 
-# Module      : Cluster
-# Description : Terraform cluster module variables.
 variable "cluster_enabled" {
   type        = bool
   default     = false
@@ -434,7 +430,6 @@ variable "ssm_parameter_type" {
 }
 
 ###------------------------------- random_password----------------------------
-
 variable "length" {
   type    = number
   default = 25

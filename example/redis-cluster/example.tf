@@ -3,16 +3,15 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "git::https://github.com/opz0/terraform-aws-vpc.git?ref=v1.0.0"
+  source      = "git::https://github.com/cypik/terraform-aws-vpc.git?ref=v1.0.0"
   name        = "redis2"
   environment = "test"
   label_order = ["environment", "name"]
-
-  cidr_block = "10.0.0.0/16"
+  cidr_block  = "10.0.0.0/16"
 }
 
 module "subnets" {
-  source             = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
+  source             = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
   name               = "subnets"
   environment        = "test"
   label_order        = ["environment", "name"]
@@ -25,13 +24,10 @@ module "subnets" {
 }
 
 module "redis-cluster" {
-  source = "./../../"
-
-  name        = "redis-cluster"
-  environment = "test"
-  label_order = ["environment", "name"]
-
-
+  source        = "./../../"
+  name          = "redis-cluster"
+  environment   = "test"
+  label_order   = ["environment", "name"]
   vpc_id        = module.vpc.id
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [6379]
@@ -48,7 +44,7 @@ module "redis-cluster" {
   snapshot_retention_limit    = 7
   automatic_failover_enabled  = true
   extra_tags = {
-    Application = "Opz0"
+    Application = "cypik"
   }
 
 

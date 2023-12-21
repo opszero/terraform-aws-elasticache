@@ -14,17 +14,16 @@ This module is basically combination of Terraform open source and includes autom
 ## Usage
 To use this module, you can include it in your Terraform configuration. Here's an example of how to use it:
 
-## Examples
+## Examples:
 
 ## Example: memcached
 
 ```hcl
 module "memcached" {
-  source      = "git::https://github.com/opz0/terraform-aws-memcached.git?ref=v1.0.0"
-  name        = "memcached"
-  environment = "test"
-  label_order = ["name", "environment"]
-
+  source        = "git::https://github.com/cypik/terraform-aws-memcached.git?ref=v1.0.0"
+  name          = "memcached"
+  environment   = "test"
+  label_order   = ["name", "environment"]
   vpc_id        = module.vpc.id
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [11211]
@@ -42,7 +41,7 @@ module "memcached" {
   subnet_ids                               = module.subnets.public_subnet_id
   availability_zones                       = ["eu-west-1a", "eu-west-1b"]
   extra_tags = {
-    Application = "opz0"
+    Application = "cypik"
   }
 
   route53_record_enabled         = false
@@ -58,11 +57,10 @@ module "memcached" {
 
 ```hcl
 module "redis" {
-  source      = "git::https://github.com/opz0/terraform-aws-redis.git?ref=v1.0.0"
-  name        = "redis"
-  environment = "test"
-  label_order = ["name", "environment"]
-
+  source        = "git::https://github.com/cypik/terraform-aws-redis.git?ref=v1.0.0"
+  name          = "redis"
+  environment   = "test"
+  label_order   = ["name", "environment"]
   vpc_id        = module.vpc.id
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [6379]
@@ -94,7 +92,7 @@ module "redis" {
     }
   ]
   extra_tags = {
-    Application = "Opz0"
+    Application = "cypik"
   }
 
   route53_record_enabled         = false
@@ -109,12 +107,10 @@ module "redis" {
 Example: redis-cluster
 ```hcl
 module "redis-cluster" {
-  source      = "git::https://github.com/opz0/terraform-aws-redis-cluster.git?ref=v1.0.0"
-  name        = "redis-cluster"
-  environment = "test"
-  label_order = ["environment", "name"]
-
-
+  source        = "git::https://github.com/cypik/terraform-aws-redis-cluster.git?ref=v1.0.0"
+  name          = "redis-cluster"
+  environment   = "test"
+  label_order   = ["environment", "name"]
   vpc_id        = module.vpc.id
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [6379]
@@ -131,7 +127,7 @@ module "redis-cluster" {
   snapshot_retention_limit    = 7
   automatic_failover_enabled  = true
   extra_tags = {
-    Application = "Opz0"
+    Application = "cypik"
   }
 
   route53_record_enabled         = false
@@ -157,10 +153,10 @@ module "redis-cluster" {
 - Other relevant security group outputs (modify as needed).
 
 ## Examples
-For detailed examples on how to use this module, please refer to the 'examples' directory within this repository.
+For detailed examples on how to use this module, please refer to the [examples](https://github.com/cypik/terraform-aws-elasticache/tree/master/example) directory within this repository.
 
 ## Author
 Your Name Replace '[License Name]' and '[Your Name]' with the appropriate license and your information. Feel free to expand this README with additional details or usage instructions as needed for your specific use case.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/opz0/terraform-aws-elasticache/blob/master/LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](https://github.com/cypik/terraform-aws-elasticache/blob/master/LICENSE) file for details.

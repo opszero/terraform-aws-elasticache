@@ -3,16 +3,15 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "git::https://github.com/opz0/terraform-aws-vpc.git?ref=v1.0.0"
+  source      = "git::https://github.com/cypik/terraform-aws-vpc.git?ref=v1.0.0"
   name        = "vpc"
   environment = "test"
   label_order = ["environment", "name"]
-
-  cidr_block = "10.0.0.0/16"
+  cidr_block  = "10.0.0.0/16"
 }
 
 module "subnets" {
-  source             = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
+  source             = "git::https://github.com/cypik/terraform-aws-subnet.git?ref=v1.0.0"
   name               = "subnets"
   environment        = "test"
   label_order        = ["environment", "name"]
@@ -25,12 +24,10 @@ module "subnets" {
 }
 
 module "memcached" {
-  source = "./../../"
-
-  name        = "memcached"
-  environment = "test"
-  label_order = ["name", "environment"]
-
+  source        = "./../../"
+  name          = "memcached"
+  environment   = "test"
+  label_order   = ["name", "environment"]
   vpc_id        = module.vpc.id
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [11211]
@@ -48,7 +45,7 @@ module "memcached" {
   subnet_ids                               = module.subnets.public_subnet_id
   availability_zones                       = ["eu-west-1a", "eu-west-1b"]
   extra_tags = {
-    Application = "opz0"
+    Application = "cypik"
   }
 
   route53_record_enabled         = false
