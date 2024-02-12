@@ -3,16 +3,17 @@ provider "aws" {
 }
 
 module "vpc" {
-  source      = "git::https://github.com/opz0/terraform-aws-vpc.git?ref=v1.0.0"
+  source      = "cypik/vpc/aws"
+  version     = "1.0.1"
   name        = "redis"
   environment = "test"
   label_order = ["environment", "name"]
-
-  cidr_block = "10.0.0.0/16"
+  cidr_block  = "10.0.0.0/16"
 }
 
 module "subnets" {
-  source             = "git::https://github.com/opz0/terraform-aws-subnet.git?ref=v1.0.0"
+  source             = "cypik/subnet/aws"
+  version            = "1.0.1"
   name               = "redis"
   environment        = "test"
   label_order        = ["environment", "name"]
@@ -26,12 +27,10 @@ module "subnets" {
 
 #tfsec:ignore:aws-cloudwatch-log-group-customer-key
 module "redis" {
-  source = "./../../"
-
-  name        = "redis"
-  environment = "test"
-  label_order = ["name", "environment"]
-
+  source        = "./../../"
+  name          = "redis"
+  environment   = "test"
+  label_order   = ["name", "environment"]
   vpc_id        = module.vpc.id
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [6379]
@@ -63,7 +62,7 @@ module "redis" {
     }
   ]
   extra_tags = {
-    Application = "Opz0"
+    Application = "cypik"
   }
 
   route53_record_enabled         = false
