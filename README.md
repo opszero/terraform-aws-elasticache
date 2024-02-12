@@ -13,6 +13,7 @@
 
 ## Introduction
 This Terraform module creates an AWS elasticache along with additional configuration options.
+
 ## Usage
 To use this module, you can include it in your Terraform configuration. Here's an example of how to use it:
 
@@ -69,7 +70,7 @@ module "redis" {
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [6379]
 
-  cluster_replication_enabled = true
+  cluster_replication_enablRed = true
   engine                      = "redis"
   engine_version              = "7.0"
   parameter_group_name        = "default.redis7"
