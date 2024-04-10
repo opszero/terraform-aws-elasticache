@@ -109,7 +109,7 @@ module "redis" {
 }
 ```
 
-Example: redis-cluster
+## Example: redis-cluster
 ```hcl
 module "redis-cluster" {
   source        = "cypik/redis-cluster/aws"
