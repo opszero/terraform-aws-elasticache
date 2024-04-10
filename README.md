@@ -23,7 +23,7 @@ To use this module, you can include it in your Terraform configuration. Here's a
 
 ```hcl
 module "memcached" {
-  source        = "cypik/memcached/aws"
+  source        = "cypik/elasticache/aws"
   version       = "1.0.0"
   name          = "memcached"
   environment   = "test"
@@ -61,7 +61,7 @@ module "memcached" {
 
 ```hcl
 module "redis" {
-  source        = "cypik/redis/aws"
+  source        = "cypik/elasticache/aws"
   version       ="1.0.0"
   name          = "redis"
   environment   = "test"
@@ -112,7 +112,7 @@ module "redis" {
 ## Example: redis-cluster
 ```hcl
 module "redis-cluster" {
-  source        = "cypik/redis-cluster/aws"
+  source        = "cypik/elasticache/aws"
   version       = "1.0.0"
   name          = "redis-cluster"
   environment   = "test"
