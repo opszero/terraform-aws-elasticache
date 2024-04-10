@@ -25,7 +25,6 @@ module "subnets" {
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
 
-#tfsec:ignore:aws-cloudwatch-log-group-customer-key
 module "redis" {
   source        = "./../../"
   name          = "redis"

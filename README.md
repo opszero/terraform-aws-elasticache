@@ -24,7 +24,7 @@ To use this module, you can include it in your Terraform configuration. Here's a
 ```hcl
 module "memcached" {
   source        = "cypik/memcached/aws"
-  version       = "1.0.1"
+  version       = "1.0.0"
   name          = "memcached"
   environment   = "test"
   label_order   = ["name", "environment"]
@@ -62,7 +62,7 @@ module "memcached" {
 ```hcl
 module "redis" {
   source        = "cypik/redis/aws"
-  version       ="1.0.1"
+  version       ="1.0.0"
   name          = "redis"
   environment   = "test"
   label_order   = ["name", "environment"]
@@ -113,7 +113,7 @@ Example: redis-cluster
 ```hcl
 module "redis-cluster" {
   source        = "cypik/redis-cluster/aws"
-  version       = "1.0.1"
+  version       = "1.0.0"
   name          = "redis-cluster"
   environment   = "test"
   label_order   = ["environment", "name"]
