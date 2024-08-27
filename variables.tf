@@ -111,6 +111,11 @@ variable "availability_zones" {
   description = "A list of EC2 availability zones in which the replication group's cache clusters will be created. The order of the availability zones in the list is not important."
 }
 
+variable "multi_az_enabled" {
+  default     = false
+  description = "Specifies whether to enable Multi-AZ Support for the replication group. If true, automatic_failover_enabled must also be enabled. Defaults to false."
+}
+
 variable "num_cache_clusters" {
   type        = number
   default     = 1
@@ -147,28 +152,10 @@ variable "cluster_replication_enabled" {
   description = "(Redis only) Enabled or disabled replication_group for redis cluster."
 }
 
-variable "cluster_enabled" {
-  type        = bool
-  default     = false
-  description = "(Memcache only) Enabled or disabled cluster."
-}
-
 variable "num_cache_nodes" {
   type        = number
   default     = 1
   description = "(Required unless replication_group_id is provided) The initial number of cache nodes that the cache cluster will have. For Redis, this value must be 1. For Memcache, this value must be between 1 and 20. If this number is reduced on subsequent runs, the highest numbered nodes will be removed."
-}
-
-variable "az_mode" {
-  type        = string
-  default     = "single-az"
-  description = "(Memcached only) Specifies whether the nodes in this Memcached node group are created in a single Availability Zone or created across multiple Availability Zones in the cluster's region. Valid values for this parameter are single-az or cross-az, default is single-az. If you want to choose cross-az, num_cache_nodes must be greater than 1."
-}
-
-variable "parameter_group_name" {
-  type        = string
-  default     = "default.redis5.0"
-  description = "The name of the parameter group to associate with this replication group. If this argument is omitted, the default cache parameter group for the specified engine is used."
 }
 
 variable "log_delivery_configuration" {
@@ -187,7 +174,6 @@ variable "multi_az_enabled" {
   type        = bool
   default     = false
   description = "Specifies whether to enable Multi-AZ Support for the replication group. If true, automatic_failover_enabled must also be enabled. Defaults to false."
-
 }
 
 variable "deletion_window_in_days" {
@@ -195,14 +181,6 @@ variable "deletion_window_in_days" {
   default     = 7
   description = "Duration in days after which the key is deleted after destruction of the resource."
 }
-
-
-variable "enable_key_rotation" {
-  type        = string
-  default     = true
-  description = "Specifies whether key rotation is enabled."
-}
-
 
 variable "vpc_id" {
   type        = string
@@ -247,11 +225,6 @@ variable "sg_ids" {
   description = "of the security group id."
 }
 
-variable "sg_description" {
-  type        = string
-  default     = "Instance default security group (only egress access is allowed)."
-  description = "The security group description."
-}
 variable "sg_egress_description" {
   type        = string
   default     = "Description of the rule."
