@@ -1,15 +1,3 @@
-module "labels" {
-  source      = "cypik/labels/aws"
-  version     = "1.0.1"
-  enabled     = var.enable
-  name        = var.name
-  repository  = var.repository
-  environment = var.environment
-  managedby   = var.managedby
-  label_order = var.label_order
-  extra_tags  = var.extra_tags
-}
-
 resource "aws_security_group" "default" {
   count       = var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
   name        = format("%s-sg", module.labels.id)
@@ -54,26 +42,6 @@ resource "aws_security_group_rule" "ingress" {
   security_group_id = join("", aws_security_group.default[*].id)
 }
 
-resource "aws_kms_key" "default" {
-  count                    = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
-  description              = var.kms_description
-  key_usage                = var.key_usage
-  deletion_window_in_days  = var.deletion_window_in_days
-  is_enabled               = var.is_enabled
-  enable_key_rotation      = var.enable_key_rotation
-  customer_master_key_spec = var.customer_master_key_spec
-  policy                   = data.aws_iam_policy_document.default.json
-  multi_region             = var.kms_multi_region
-  tags                     = module.labels.tags
-}
-
-resource "aws_kms_alias" "default" {
-  count         = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
-  name          = coalesce(var.alias, format("alias/%v", module.labels.id))
-  target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default[*].id) : var.kms_key_id
-}
-
-
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 data "aws_iam_policy_document" "default" {
@@ -97,16 +65,14 @@ data "aws_iam_policy_document" "default" {
 }
 
 resource "aws_cloudwatch_log_group" "default" {
-  count             = var.enable && length(var.log_delivery_configuration) > 0 ? 1 : 0
-  name              = format("logs-%s", module.labels.id)
+  name              = "elasticache-${var.name}"
   retention_in_days = var.retention_in_days
   tags              = module.labels.tags
 }
 
 
 resource "aws_elasticache_subnet_group" "default" {
-  count       = var.enable ? 1 : 0
-  name        = format("%s-subnet-group", module.labels.id)
+  name        = var.name
   subnet_ids  = var.subnet_ids
   description = var.subnet_group_description
   tags        = module.labels.tags
@@ -119,7 +85,7 @@ resource "random_password" "auth_token" {
 }
 
 resource "aws_elasticache_replication_group" "cluster" {
-  count                      = var.enable && var.cluster_replication_enabled ? 1 : 0
+  count                      = var.cluster_replication_enabled ? 1 : 0
   engine                     = var.engine
   replication_group_id       = module.labels.id
   description                = var.replication_group_description
@@ -139,11 +105,10 @@ resource "aws_elasticache_replication_group" "cluster" {
   apply_immediately          = var.apply_immediately
   auto_minor_version_upgrade = var.auto_minor_version_upgrade
   maintenance_window         = var.maintenance_window
-  at_rest_encryption_enabled = var.at_rest_encryption_enabled
-  transit_encryption_enabled = var.transit_encryption_enabled
+  at_rest_encryption_enabled = true
+  transit_encryption_enabled =
   multi_az_enabled           = var.multi_az_enabled
   auth_token                 = var.auth_token_enable ? (var.auth_token == null ? random_password.auth_token[0].result : var.auth_token) : null
-  kms_key_id                 = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
   tags                       = module.labels.tags
   num_cache_clusters         = var.num_cache_clusters
 
@@ -160,7 +125,6 @@ resource "aws_elasticache_replication_group" "cluster" {
 }
 
 resource "aws_elasticache_cluster" "default" {
-  count                        = var.enable && var.cluster_enabled ? 1 : 0
   engine                       = var.engine
   cluster_id                   = module.labels.id
   engine_version               = var.engine_version
@@ -183,48 +147,20 @@ resource "aws_elasticache_cluster" "default" {
 
 }
 
-resource "aws_route53_record" "elasticache" {
-  count   = var.enable && var.route53_record_enabled ? 1 : 0
-  name    = var.dns_record_name
-  type    = var.route53_type
-  ttl     = var.route53_ttl
-  zone_id = var.route53_zone_id
-  records = var.automatic_failover_enabled ? [join("", aws_elasticache_replication_group.cluster[*].configuration_endpoint_address)] : [join("", aws_elasticache_replication_group.cluster[*].primary_endpoint_address)]
-}
+# resource "aws_ssm_parameter" "secret" {
+#   count       = var.auth_token_enable ? 1 : 0
+#   name        = format("/%s/%s/auth-token", var.environment, var.name)
+#   description = var.ssm_parameter_description
+#   type        = var.ssm_parameter_type
+#   value       = var.auth_token == null ? random_password.auth_token[0].result : var.auth_token
+#   key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
+# }
 
-
-resource "aws_ssm_parameter" "secret" {
-  count       = var.auth_token_enable ? 1 : 0
-  name        = format("/%s/%s/auth-token", var.environment, var.name)
-  description = var.ssm_parameter_description
-  type        = var.ssm_parameter_type
-  value       = var.auth_token == null ? random_password.auth_token[0].result : var.auth_token
-  key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
-}
-
-resource "aws_ssm_parameter" "secret-endpoint" {
-  count       = var.enable && var.ssm_parameter_endpoint_enabled ? 1 : 0
-  name        = format("/%s/%s/endpoint", var.environment, var.name)
-  description = var.ssm_parameter_description
-  type        = var.ssm_parameter_type
-  value       = var.automatic_failover_enabled ? [join("", aws_elasticache_replication_group.cluster[*].configuration_endpoint_address)][0] : [join("", aws_elasticache_replication_group.cluster[*].primary_endpoint_address)][0]
-  key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
-}
-
-resource "aws_route53_record" "memcached_route_53" {
-  count   = var.memcached_route53_record_enabled ? 1 : 0
-  name    = var.dns_record_name
-  zone_id = var.route53_zone_id
-  type    = var.route53_type
-  ttl     = var.route53_ttl
-  records = aws_elasticache_cluster.default[*].configuration_endpoint
-}
-
-resource "aws_ssm_parameter" "memcached_secret-endpoint" {
-  count       = var.memcached_ssm_parameter_endpoint_enabled ? 1 : 0
-  name        = format("/%s/%s/memcached-endpoint", var.environment, var.name)
-  description = var.ssm_parameter_description
-  type        = var.ssm_parameter_type
-  value       = join("", aws_elasticache_cluster.default[*].configuration_endpoint)
-  key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
-}
+# resource "aws_ssm_parameter" "secret-endpoint" {
+#   count       = var.enable && var.ssm_parameter_endpoint_enabled ? 1 : 0
+#   name        = format("/%s/%s/endpoint", var.environment, var.name)
+#   description = var.ssm_parameter_description
+#   type        = var.ssm_parameter_type
+#   value       = var.automatic_failover_enabled ? [join("", aws_elasticache_replication_group.cluster[*].configuration_endpoint_address)][0] : [join("", aws_elasticache_replication_group.cluster[*].primary_endpoint_address)][0]
+#   key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
+# }

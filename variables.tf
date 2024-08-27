@@ -4,45 +4,17 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
-variable "repository" {
+variable "description" {
   type        = string
-  default     = "https://github.com/cypik/terraform-aws-elasticache"
-  description = "Terraform current module repo"
-
-  validation {
-    condition     = can(regex("^https://", var.repository))
-    error_message = "The module-repo value must be a valid Git repo link."
-  }
+  default     = "The Description of the ElastiCache Subnet Group."
+  description = "Description for the cache subnet group. Defaults to `Managed by Terraform`."
 }
 
-variable "environment" {
-  type        = string
-  default     = ""
-  description = "Environment (e.g. `prod`, `dev`, `staging`)."
-}
 
-variable "label_order" {
-  type        = list(any)
-  default     = ["name", "environment"]
-  description = "Label order, e.g. `name`,`application`."
-}
-
-variable "extra_tags" {
+variable "tags" {
   type        = map(string)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
-}
-
-variable "managedby" {
-  type        = string
-  default     = "cypik"
-  description = "ManagedBy, eg  'cypik'."
-}
-
-variable "enable" {
-  type        = bool
-  default     = true
-  description = "Enable or disable of elasticache"
 }
 
 variable "engine" {
@@ -127,11 +99,7 @@ variable "subnet_ids" {
   sensitive   = true
 }
 
-variable "subnet_group_description" {
-  type        = string
-  default     = "The Description of the ElastiCache Subnet Group."
-  description = "Description for the cache subnet group. Defaults to `Managed by Terraform`."
-}
+
 variable "replication_group_description" {
   type        = string
   default     = "User-created description for the replication group."
@@ -159,18 +127,6 @@ variable "maintenance_window" {
   type        = string
   default     = "sun:05:00-sun:06:00"
   description = "Maintenance window."
-}
-
-variable "at_rest_encryption_enabled" {
-  type        = bool
-  default     = true
-  description = "Enable encryption at rest."
-}
-
-variable "transit_encryption_enabled" {
-  type        = bool
-  default     = true
-  description = "Whether to enable encryption in transit."
 }
 
 variable "auth_token_enable" {
@@ -234,48 +190,12 @@ variable "multi_az_enabled" {
 
 }
 
-variable "kms_key_enabled" {
-  type        = bool
-  default     = true
-  description = "Specifies whether the kms is enabled or disabled."
-}
-
-variable "kms_key_id" {
-  type        = string
-  default     = ""
-  description = "The ARN of the key that you wish to use if encrypting at rest. If not supplied, uses service managed encryption. Can be specified only if at_rest_encryption_enabled = true."
-}
-
-variable "alias" {
-  type        = string
-  default     = "alias/redis"
-  description = "The display name of the alias. The name must start with the word `alias` followed by a forward slash."
-}
-
-variable "kms_description" {
-  type        = string
-  default     = "Parameter Store KMS master key"
-  description = "The description of the key as viewed in AWS console."
-}
-
-variable "key_usage" {
-  type        = string
-  default     = "ENCRYPT_DECRYPT"
-  sensitive   = true
-  description = "Specifies the intended use of the key. Defaults to ENCRYPT_DECRYPT, and only symmetric encryption and decryption are supported."
-}
-
 variable "deletion_window_in_days" {
   type        = number
   default     = 7
   description = "Duration in days after which the key is deleted after destruction of the resource."
 }
 
-variable "is_enabled" {
-  type        = bool
-  default     = true
-  description = "Specifies whether the key is enabled."
-}
 
 variable "enable_key_rotation" {
   type        = string
@@ -283,18 +203,7 @@ variable "enable_key_rotation" {
   description = "Specifies whether key rotation is enabled."
 }
 
-variable "customer_master_key_spec" {
-  type        = string
-  default     = "SYMMETRIC_DEFAULT"
-  description = "Specifies whether the key contains a symmetric key or an asymmetric key pair and the encryption algorithms or signing algorithms that the key supports. Valid values: SYMMETRIC_DEFAULT, RSA_2048, RSA_3072, RSA_4096, ECC_NIST_P256, ECC_NIST_P384, ECC_NIST_P521, or ECC_SECG_P256K1. Defaults to SYMMETRIC_DEFAULT."
-  sensitive   = true
-}
 
-variable "kms_multi_region" {
-  type        = bool
-  default     = false
-  description = "Indicates whether the KMS key is a multi-Region (true) or regional (false) key."
-}
 variable "vpc_id" {
   type        = string
   default     = ""
@@ -332,12 +241,6 @@ variable "egress_rule" {
   description = "Enable to create egress rule"
 }
 
-variable "is_external" {
-  type        = bool
-  default     = false
-  description = "enable to udated existing security Group"
-}
-
 variable "sg_ids" {
   type        = list(any)
   default     = []
@@ -367,68 +270,6 @@ variable "sg_ingress_description" {
   description = "Description of the ingress rule"
 }
 
-##---------------------route53------------------------
-variable "route53_record_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether to create Route53 record set."
-}
-
-variable "memcached_route53_record_enabled" {
-  type        = bool
-  default     = false
-  description = "Whether to create Route53 record memcached set."
-}
-
-variable "route53_type" {
-  type        = string
-  default     = ""
-  description = "The record type. Valid values are A, AAAA, CAA, CNAME, MX, NAPTR, NS, PTR, SOA, SPF, SRV and TXT. "
-}
-
-variable "route53_ttl" {
-  type        = string
-  default     = ""
-  description = "(Required for non-alias records) The TTL of the record."
-}
-
-variable "dns_record_name" {
-  type        = string
-  default     = ""
-  description = "The name of the record."
-}
-
-variable "route53_zone_id" {
-  type        = string
-  description = "Zone ID."
-}
-
-###------------------------------- ssm_parameter----------------------------
-
-variable "ssm_parameter_endpoint_enabled" {
-  type        = bool
-  default     = false
-  description = "Name of the parameter."
-}
-
-variable "memcached_ssm_parameter_endpoint_enabled" {
-  type        = bool
-  default     = false
-  description = "Name of the parameter."
-}
-
-variable "ssm_parameter_description" {
-  type        = string
-  default     = "Description of the parameter."
-  description = "SSM Parameters can be imported using."
-}
-
-variable "ssm_parameter_type" {
-  type        = string
-  default     = "SecureString"
-  description = "Type of the parameter."
-}
-
 ###------------------------------- random_password----------------------------
 variable "length" {
   type    = number
@@ -438,5 +279,4 @@ variable "length" {
 variable "special" {
   type    = bool
   default = false
-
 }
