@@ -17,12 +17,6 @@ variable "tags" {
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
-variable "engine" {
-  type        = string
-  default     = ""
-  description = "The name of the cache engine to be used for the clusters in this replication group. e.g. redis."
-}
-
 variable "automatic_failover_enabled" {
   type        = bool
   default     = true
@@ -31,7 +25,7 @@ variable "automatic_failover_enabled" {
 
 variable "engine_version" {
   type        = string
-  default     = ""
+  default     = "7.1"
   description = "The version number of the cache engine to be used for the cache clusters in this replication group."
 }
 

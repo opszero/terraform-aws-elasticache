@@ -68,15 +68,15 @@ resource "random_password" "auth_token" {
 
 resource "aws_elasticache_replication_group" "cluster" {
   count                      = var.cluster_replication_enabled ? 1 : 0
-  engine                     = var.engine
+  engine                     = "redis"
   replication_group_id       = module.labels.id
   description                = var.replication_group_description
   engine_version             = var.engine_version
   port                       = var.port
-  parameter_group_name       = var.parameter_group_name
+  parameter_group_name       = var.name
   node_type                  = var.node_type
   automatic_failover_enabled = var.automatic_failover_enabled
-  subnet_group_name          = join("", aws_elasticache_subnet_group.default[*].name)
+  subnet_group_name          = aws_elasticache_subnet_group.default.name
   security_group_ids         = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
   security_group_names       = var.security_group_names
   snapshot_arns              = var.snapshot_arns
