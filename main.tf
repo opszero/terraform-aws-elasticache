@@ -106,7 +106,7 @@ resource "aws_elasticache_replication_group" "cluster" {
   auto_minor_version_upgrade = var.auto_minor_version_upgrade
   maintenance_window         = var.maintenance_window
   at_rest_encryption_enabled = true
-  transit_encryption_enabled =
+  transit_encryption_enabled = true
   multi_az_enabled           = var.multi_az_enabled
   auth_token                 = var.auth_token_enable ? (var.auth_token == null ? random_password.auth_token[0].result : var.auth_token) : null
   tags                       = module.labels.tags
