@@ -1,9 +1,9 @@
 resource "aws_security_group" "default" {
   count       = var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
-  name        = format("%s-sg", module.labels.id)
+  name        = "${var.name}-elasticache"
   vpc_id      = var.vpc_id
   description = var.description
-  tags        = module.labels.tags
+  tags        = var.tags
   lifecycle {
     create_before_destroy = true
   }
@@ -49,7 +49,7 @@ data "aws_caller_identity" "current" {}
 resource "aws_cloudwatch_log_group" "default" {
   name              = "elasticache-${var.name}"
   retention_in_days = var.retention_in_days
-  tags              = module.labels.tags
+  tags              = var.tags
 }
 
 
@@ -57,7 +57,7 @@ resource "aws_elasticache_subnet_group" "default" {
   name        = var.name
   subnet_ids  = var.subnet_ids
   description = var.description
-  tags        = module.labels.tags
+  tags        = var.tags
 }
 
 resource "random_password" "auth_token" {
