@@ -172,14 +172,18 @@ variable "vpc_id" {
 }
 
 variable "allowed_ip" {
-  type        = list(any)
-  default     = []
+  type = list(any)
+  default = [
+    "0.0.0.0/0"
+  ]
   description = "List of allowed ip."
 }
 
 variable "allowed_ports" {
-  type        = list(any)
-  default     = []
+  type = list(any)
+  default = [
+    "-1"
+  ]
   description = "List of allowed ingress ports"
 }
 
