@@ -109,7 +109,6 @@ resource "aws_elasticache_cluster" "default" {
 
   engine                       = "redis"
   engine_version               = var.engine_version
-  port                         = var.port
   num_cache_nodes              = var.num_cache_nodes
   parameter_group_name         = var.name
   node_type                    = var.node_type

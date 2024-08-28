@@ -29,13 +29,6 @@ variable "engine_version" {
   description = "The version number of the cache engine to be used for the cache clusters in this replication group."
 }
 
-variable "port" {
-  type        = string
-  default     = ""
-  description = "the port number on which each of the cache nodes will accept connections."
-  sensitive   = true
-}
-
 variable "node_type" {
   type        = string
   default     = "cache.t2.small"
