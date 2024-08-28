@@ -130,8 +130,7 @@ resource "aws_elasticache_cluster" "default" {
   engine_version               = var.engine_version
   port                         = var.port
   num_cache_nodes              = var.num_cache_nodes
-  az_mode                      = var.az_mode
-  parameter_group_name         = var.parameter_group_name
+  parameter_group_name         = var.name
   node_type                    = var.node_type
   subnet_group_name            = join("", aws_elasticache_subnet_group.default[*].name)
   security_group_ids           = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
