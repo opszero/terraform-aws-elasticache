@@ -70,7 +70,7 @@ resource "aws_elasticache_replication_group" "cluster" {
   replication_group_id       = var.name
   description                = var.replication_group_description
   engine_version             = var.engine_version
-  parameter_group_name       = var.name
+  parameter_group_name       = aws_elasticache_parameter_group.default.id
   node_type                  = var.node_type
   automatic_failover_enabled = var.automatic_failover_enabled
   subnet_group_name          = aws_elasticache_subnet_group.default.name
@@ -109,7 +109,7 @@ resource "aws_elasticache_cluster" "default" {
   engine                       = "redis"
   engine_version               = var.engine_version
   num_cache_nodes              = var.num_cache_nodes
-  parameter_group_name         = var.name
+  parameter_group_name         = aws_elasticache_parameter_group.default.id
   node_type                    = var.node_type
   subnet_group_name            = aws_elasticache_subnet_group.default.name
   security_group_ids           = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
@@ -122,6 +122,11 @@ resource "aws_elasticache_cluster" "default" {
   preferred_availability_zones = slice(var.availability_zones, 0, var.num_cache_nodes)
   maintenance_window           = var.maintenance_window
   tags                         = var.tags
+}
+
+resource "aws_elasticache_parameter_group" "default" {
+  name   = var.name
+  family = "redis7.1"
 }
 
 # resource "aws_ssm_parameter" "password" {
