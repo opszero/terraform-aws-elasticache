@@ -3,12 +3,6 @@ output "id" {
   description = "Redis cluster id."
 }
 
-output "port" {
-  value       = var.port
-  sensitive   = true
-  description = "Redis port."
-}
-
 output "redis_endpoint" {
   value       = aws_elasticache_replication_group.cluster[*].primary_endpoint_address
   description = "Redis endpoint address."

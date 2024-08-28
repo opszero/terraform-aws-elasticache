@@ -70,7 +70,6 @@ resource "aws_elasticache_replication_group" "cluster" {
   replication_group_id       = var.name
   description                = var.replication_group_description
   engine_version             = var.engine_version
-  port                       = var.port
   parameter_group_name       = var.name
   node_type                  = var.node_type
   automatic_failover_enabled = var.automatic_failover_enabled
