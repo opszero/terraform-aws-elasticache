@@ -1,49 +1,3 @@
-resource "aws_security_group" "default" {
-  count       = length(var.sg_ids) < 1 ? 1 : 0
-  name        = "${var.name}-elasticache"
-  vpc_id      = var.vpc_id
-  description = var.description
-  tags        = var.tags
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-#tfsec:ignore:aws-ec2-no-public-egress-sgr
-resource "aws_security_group_rule" "egress" {
-  description       = "Egress rule for elasticache"
-  type              = "egress"
-  from_port         = 0
-  to_port           = 65535
-  protocol          = "-1"
-  cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = join("", aws_security_group.default[*].id)
-}
-#tfsec:ignore:aws-ec2-no-public-egress-sgr
-resource "aws_security_group_rule" "egress_ipv6" {
-  description       = "Egress rule for elasticache IPv6"
-  type              = "egress"
-  from_port         = 0
-  to_port           = 65535
-  protocol          = "-1"
-  ipv6_cidr_blocks  = ["::/0"]
-  security_group_id = join("", aws_security_group.default[*].id)
-}
-resource "aws_security_group_rule" "ingress" {
-  count             = length(var.allowed_ip) > 0 == true && length(var.sg_ids) < 1 ? length(compact(var.allowed_ports)) : 0
-  description       = var.sg_ingress_description
-  type              = "ingress"
-  from_port         = element(var.allowed_ports, count.index)
-  to_port           = element(var.allowed_ports, count.index)
-  protocol          = var.protocol
-  cidr_blocks       = var.allowed_ip
-  security_group_id = join("", aws_security_group.default[*].id)
-}
-
-data "aws_partition" "current" {}
-data "aws_caller_identity" "current" {}
-
-
 resource "aws_cloudwatch_log_group" "default" {
   name              = "${var.name}-elasticache"
   retention_in_days = var.retention_in_days
@@ -74,7 +28,7 @@ resource "aws_elasticache_replication_group" "cluster" {
   node_type                  = var.node_type
   automatic_failover_enabled = var.automatic_failover_enabled
   subnet_group_name          = aws_elasticache_subnet_group.default.name
-  security_group_ids         = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
+  security_group_ids         = var.security_group_ids
   security_group_names       = var.security_group_names
   snapshot_arns              = var.snapshot_arns
   snapshot_name              = var.snapshot_name
@@ -112,7 +66,7 @@ resource "aws_elasticache_cluster" "default" {
   parameter_group_name         = aws_elasticache_parameter_group.default.id
   node_type                    = var.node_type
   subnet_group_name            = aws_elasticache_subnet_group.default.name
-  security_group_ids           = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
+  security_group_ids           = var.security_group_ids
   snapshot_arns                = var.snapshot_arns
   snapshot_name                = var.snapshot_name
   notification_topic_arn       = var.notification_topic_arn

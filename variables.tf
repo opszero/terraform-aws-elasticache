@@ -171,47 +171,13 @@ variable "vpc_id" {
   sensitive   = true
 }
 
-variable "allowed_ip" {
-  type        = list(any)
-  default     = []
-  description = "List of allowed ip."
-}
 
-variable "allowed_ports" {
-  type        = list(any)
-  default     = []
-  description = "List of allowed ingress ports"
-}
-
-variable "protocol" {
-  type        = string
-  default     = "tcp"
-  description = "The protocol. If not icmp, tcp, udp, or all use the."
-}
-
-variable "sg_ids" {
+variable "security_group_ids" {
   type        = list(any)
   default     = []
   description = "of the security group id."
 }
 
-variable "sg_egress_description" {
-  type        = string
-  default     = "Description of the rule."
-  description = "Description of the egress and ingress rule"
-}
-
-variable "sg_egress_ipv6_description" {
-  type        = string
-  default     = "Description of the rule."
-  description = "Description of the egress_ipv6 rule"
-}
-
-variable "sg_ingress_description" {
-  type        = string
-  default     = "Description of the ingress rule use elasticache."
-  description = "Description of the ingress rule"
-}
 
 ###------------------------------- random_password----------------------------
 variable "length" {
