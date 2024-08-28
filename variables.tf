@@ -111,11 +111,6 @@ variable "availability_zones" {
   description = "A list of EC2 availability zones in which the replication group's cache clusters will be created. The order of the availability zones in the list is not important."
 }
 
-variable "multi_az_enabled" {
-  default     = false
-  description = "Specifies whether to enable Multi-AZ Support for the replication group. If true, automatic_failover_enabled must also be enabled. Defaults to false."
-}
-
 variable "num_cache_clusters" {
   type        = number
   default     = 1
