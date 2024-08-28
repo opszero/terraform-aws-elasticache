@@ -44,25 +44,7 @@ resource "aws_security_group_rule" "ingress" {
 
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
-data "aws_iam_policy_document" "default" {
-  version = "2012-10-17"
-  statement {
-    sid    = "Enable IAM User Permissions"
-    effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = [
-        format(
-          "arn:%s:iam::%s:root",
-          join("", data.aws_partition.current[*].partition),
-          data.aws_caller_identity.current.account_id
-        )
-      ]
-    }
-    actions   = ["kms:*"]
-    resources = ["*"]
-  }
-}
+
 
 resource "aws_cloudwatch_log_group" "default" {
   name              = "elasticache-${var.name}"
@@ -74,7 +56,7 @@ resource "aws_cloudwatch_log_group" "default" {
 resource "aws_elasticache_subnet_group" "default" {
   name        = var.name
   subnet_ids  = var.subnet_ids
-  description = var.subnet_group_description
+  description = var.description
   tags        = module.labels.tags
 }
 
@@ -146,20 +128,9 @@ resource "aws_elasticache_cluster" "default" {
 
 }
 
-# resource "aws_ssm_parameter" "secret" {
-#   count       = var.auth_token_enable ? 1 : 0
-#   name        = format("/%s/%s/auth-token", var.environment, var.name)
+# resource "aws_ssm_parameter" "password" {
+#   name        = format("/elasticache/auth-token", var.environment, var.name)
 #   description = var.ssm_parameter_description
 #   type        = var.ssm_parameter_type
 #   value       = var.auth_token == null ? random_password.auth_token[0].result : var.auth_token
-#   key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
-# }
-
-# resource "aws_ssm_parameter" "secret-endpoint" {
-#   count       = var.enable && var.ssm_parameter_endpoint_enabled ? 1 : 0
-#   name        = format("/%s/%s/endpoint", var.environment, var.name)
-#   description = var.ssm_parameter_description
-#   type        = var.ssm_parameter_type
-#   value       = var.automatic_failover_enabled ? [join("", aws_elasticache_replication_group.cluster[*].configuration_endpoint_address)][0] : [join("", aws_elasticache_replication_group.cluster[*].primary_endpoint_address)][0]
-#   key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
 # }
