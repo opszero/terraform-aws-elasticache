@@ -69,7 +69,7 @@ resource "random_password" "auth_token" {
 resource "aws_elasticache_replication_group" "cluster" {
   count                      = var.cluster_replication_enabled ? 1 : 0
   engine                     = "redis"
-  replication_group_id       = module.labels.id
+  replication_group_id       = var.name
   description                = var.replication_group_description
   engine_version             = var.engine_version
   port                       = var.port
@@ -91,7 +91,7 @@ resource "aws_elasticache_replication_group" "cluster" {
   transit_encryption_enabled = true
   multi_az_enabled           = var.multi_az_enabled
   auth_token                 = var.auth_token_enable ? (var.auth_token == null ? random_password.auth_token[0].result : var.auth_token) : null
-  tags                       = module.labels.tags
+  tags                       = var.tags
   num_cache_clusters         = var.num_cache_clusters
 
   dynamic "log_delivery_configuration" {
@@ -107,8 +107,9 @@ resource "aws_elasticache_replication_group" "cluster" {
 }
 
 resource "aws_elasticache_cluster" "default" {
-  engine                       = var.engine
-  cluster_id                   = module.labels.id
+  cluster_id = var.name
+
+  engine                       = "redis"
   engine_version               = var.engine_version
   port                         = var.port
   num_cache_nodes              = var.num_cache_nodes
@@ -124,8 +125,7 @@ resource "aws_elasticache_cluster" "default" {
   apply_immediately            = var.apply_immediately
   preferred_availability_zones = slice(var.availability_zones, 0, var.num_cache_nodes)
   maintenance_window           = var.maintenance_window
-  tags                         = module.labels.tags
-
+  tags                         = var.tags
 }
 
 # resource "aws_ssm_parameter" "password" {
