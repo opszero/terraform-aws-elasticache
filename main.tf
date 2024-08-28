@@ -126,7 +126,7 @@ resource "aws_elasticache_cluster" "default" {
 
 resource "aws_elasticache_parameter_group" "default" {
   name   = var.name
-  family = "redis7.1"
+  family = "redis7"
 }
 
 # resource "aws_ssm_parameter" "password" {
