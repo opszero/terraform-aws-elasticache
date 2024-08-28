@@ -111,7 +111,7 @@ resource "aws_elasticache_cluster" "default" {
   num_cache_nodes              = var.num_cache_nodes
   parameter_group_name         = var.name
   node_type                    = var.node_type
-  subnet_group_name            = join("", aws_elasticache_subnet_group.default[*].name)
+  subnet_group_name            = aws_elasticache_subnet_group.default.name
   security_group_ids           = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
   snapshot_arns                = var.snapshot_arns
   snapshot_name                = var.snapshot_name
