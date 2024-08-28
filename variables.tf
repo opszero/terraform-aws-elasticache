@@ -196,18 +196,6 @@ variable "protocol" {
   description = "The protocol. If not icmp, tcp, udp, or all use the."
 }
 
-variable "enable_security_group" {
-  type        = bool
-  default     = true
-  description = "Enable default Security Group with only Egress traffic allowed."
-}
-
-variable "egress_rule" {
-  type        = bool
-  default     = true
-  description = "Enable to create egress rule"
-}
-
 variable "sg_ids" {
   type        = list(any)
   default     = []

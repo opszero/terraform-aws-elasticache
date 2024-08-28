@@ -1,5 +1,5 @@
 resource "aws_security_group" "default" {
-  count       = var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
+  count       = length(var.sg_ids) < 1 ? 1 : 0
   name        = "${var.name}-elasticache"
   vpc_id      = var.vpc_id
   description = var.description
@@ -11,8 +11,7 @@ resource "aws_security_group" "default" {
 
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress" {
-  count             = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false && var.egress_rule == true) ? 1 : 0
-  description       = var.sg_egress_description
+  description       = "Egress rule for elasticache"
   type              = "egress"
   from_port         = 0
   to_port           = 65535
@@ -22,8 +21,7 @@ resource "aws_security_group_rule" "egress" {
 }
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress_ipv6" {
-  count             = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false) && var.egress_rule == true ? 1 : 0
-  description       = var.sg_egress_ipv6_description
+  description       = "Egress rule for elasticache IPv6"
   type              = "egress"
   from_port         = 0
   to_port           = 65535
@@ -47,7 +45,7 @@ data "aws_caller_identity" "current" {}
 
 
 resource "aws_cloudwatch_log_group" "default" {
-  name              = "elasticache-${var.name}"
+  name              = "${var.name}-elasticache"
   retention_in_days = var.retention_in_days
   tags              = var.tags
 }
