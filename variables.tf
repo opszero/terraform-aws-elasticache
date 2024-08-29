@@ -116,7 +116,7 @@ variable "maintenance_window" {
   description = "Maintenance window."
 }
 
-variable "auth_token_enable" {
+variable "auth_token_enabled" {
   type        = bool
   default     = true
   description = "Flag to specify whether to create auth token (password) protected cluster. Can be specified only if transit_encryption_enabled = true."

@@ -13,7 +13,7 @@ resource "aws_elasticache_subnet_group" "default" {
 }
 
 resource "random_password" "auth_token" {
-  count   = var.auth_token_enable && var.auth_token == null ? 1 : 0
+  count   = var.auth_token_enabled && var.auth_token == null ? 1 : 0
   length  = var.length
   special = var.special
 }
@@ -41,7 +41,7 @@ resource "aws_elasticache_replication_group" "cluster" {
   at_rest_encryption_enabled = true
   transit_encryption_enabled = true
   multi_az_enabled           = var.multi_az_enabled
-  auth_token                 = var.auth_token_enable ? (var.auth_token == null ? random_password.auth_token[0].result : var.auth_token) : null
+  auth_token                 = var.auth_token_enabled ? (var.auth_token == null ? random_password.auth_token[0].result : var.auth_token) : null
   tags                       = var.tags
   num_cache_clusters         = var.num_cache_clusters
 
