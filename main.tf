@@ -21,7 +21,7 @@ resource "random_password" "auth_token" {
 resource "aws_elasticache_replication_group" "cluster" {
   count                      = var.cluster_replication_enabled ? 1 : 0
   engine                     = "redis"
-  replication_group_id       = var.name
+  replication_group_id       = "${var.name}-replication-group"
   description                = var.replication_group_description
   engine_version             = var.engine_version
   parameter_group_name       = aws_elasticache_parameter_group.default.id
