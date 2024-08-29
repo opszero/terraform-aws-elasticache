@@ -31,7 +31,7 @@ variable "engine_version" {
 
 variable "node_type" {
   type        = string
-  default     = "cache.t2.small"
+  default     = "cache.t3.small"
   description = "The compute and memory capacity of the nodes in the node group."
 }
 
