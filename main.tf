@@ -19,9 +19,8 @@ resource "random_password" "auth_token" {
 }
 
 resource "aws_elasticache_replication_group" "cluster" {
-  count                      = var.cluster_replication_enabled ? 1 : 0
   engine                     = "redis"
-  replication_group_id       = "${var.name}-replication-group"
+  replication_group_id       = var.name
   description                = var.replication_group_description
   engine_version             = var.engine_version
   parameter_group_name       = aws_elasticache_parameter_group.default.id
@@ -57,26 +56,26 @@ resource "aws_elasticache_replication_group" "cluster" {
   }
 }
 
-resource "aws_elasticache_cluster" "default" {
-  cluster_id = var.name
+# resource "aws_elasticache_cluster" "default" {
+#   cluster_id = var.name
 
-  engine                       = "redis"
-  engine_version               = var.engine_version
-  num_cache_nodes              = var.num_cache_nodes
-  parameter_group_name         = aws_elasticache_parameter_group.default.id
-  node_type                    = var.node_type
-  subnet_group_name            = aws_elasticache_subnet_group.default.name
-  security_group_ids           = var.security_group_ids
-  snapshot_arns                = var.snapshot_arns
-  snapshot_name                = var.snapshot_name
-  notification_topic_arn       = var.notification_topic_arn
-  snapshot_window              = var.snapshot_window
-  snapshot_retention_limit     = var.snapshot_retention_limit
-  apply_immediately            = var.apply_immediately
-  preferred_availability_zones = slice(var.availability_zones, 0, var.num_cache_nodes)
-  maintenance_window           = var.maintenance_window
-  tags                         = var.tags
-}
+#   engine                       = "redis"
+#   engine_version               = var.engine_version
+#   num_cache_nodes              = var.num_cache_nodes
+#   parameter_group_name         = aws_elasticache_parameter_group.default.id
+#   node_type                    = var.node_type
+#   subnet_group_name            = aws_elasticache_subnet_group.default.name
+#   security_group_ids           = var.security_group_ids
+#   snapshot_arns                = var.snapshot_arns
+#   snapshot_name                = var.snapshot_name
+#   notification_topic_arn       = var.notification_topic_arn
+#   snapshot_window              = var.snapshot_window
+#   snapshot_retention_limit     = var.snapshot_retention_limit
+#   apply_immediately            = var.apply_immediately
+#   preferred_availability_zones = slice(var.availability_zones, 0, var.num_cache_nodes)
+#   maintenance_window           = var.maintenance_window
+#   tags                         = var.tags
+# }
 
 resource "aws_elasticache_parameter_group" "default" {
   name   = var.name
