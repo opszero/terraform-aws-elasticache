@@ -86,6 +86,11 @@ variable "subnet_ids" {
   sensitive   = true
 }
 
+variable "transit_encryption_enabled" {
+  type        = bool
+  default     = false
+  description = "Specifies whether to enable encryption in transit."
+}
 
 variable "replication_group_description" {
   type        = string
