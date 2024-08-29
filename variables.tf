@@ -89,8 +89,8 @@ variable "subnet_ids" {
 
 variable "replication_group_description" {
   type        = string
-  default     = "User-created description for the replication group."
-  description = "Name of either the CloudWatch Logs LogGroup or Kinesis Data Firehose resource."
+  default     = ""
+  description = "Desc of either the  resource."
 }
 
 variable "availability_zones" {
@@ -126,12 +126,6 @@ variable "auth_token" {
   type        = string
   default     = null
   description = "The password used to access a password protected server. Can be specified only if transit_encryption_enabled = true."
-}
-
-variable "cluster_replication_enabled" {
-  type        = bool
-  default     = false
-  description = "(Redis only) Enabled or disabled replication_group for redis cluster."
 }
 
 variable "num_cache_nodes" {
