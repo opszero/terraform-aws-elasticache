@@ -188,3 +188,15 @@ variable "special" {
   type    = bool
   default = false
 }
+
+variable "parameter_group_parameters" {
+  description = "A list of parameter maps to apply"
+  type        = list(map(string))
+  default     = []
+}
+
+variable "parameter_group_family" {
+  description = "The engine version that the parameter group can be used with"
+  type        = string
+  default     = "redis7"
+}
