@@ -58,8 +58,20 @@ resource "aws_elasticache_replication_group" "cluster" {
 
 resource "aws_elasticache_parameter_group" "default" {
   name   = var.name
-  family = "redis7"
+  family = var.parameter_group_family
+  dynamic "parameter" {
+    for_each = var.parameter_group_parameters
+    content {
+      name  = parameter.value.name
+      value = parameter.value.value
+    }
+    lifecycle {
+      create_before_destroy = true
+    }
+
+  }
 }
+
 
 # resource "aws_ssm_parameter" "password" {
 #   name        = format("/elasticache/auth-token", var.environment, var.name)
