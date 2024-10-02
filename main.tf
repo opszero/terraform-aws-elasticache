@@ -65,10 +65,11 @@ resource "aws_elasticache_parameter_group" "default" {
       name  = parameter.value.name
       value = parameter.value.value
     }
-    lifecycle {
-      create_before_destroy = true
-    }
 
+
+  }
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
