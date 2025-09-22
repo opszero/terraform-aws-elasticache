@@ -94,7 +94,7 @@ variable "transit_encryption_enabled" {
 
 variable "replication_group_description" {
   type        = string
-  default     = ""
+  default     = null
   description = "Desc of either the  resource."
 }
 
@@ -140,9 +140,14 @@ variable "num_cache_nodes" {
 }
 
 variable "log_delivery_configuration" {
-  type        = list(map(any))
-  default     = []
-  description = "The log_delivery_configuration block allows the streaming of Redis SLOWLOG or Redis Engine Log to CloudWatch Logs or Kinesis Data Firehose. Max of 2 blocks."
+  description = "(Redis OSS or Valkey) Specifies the destination and format of Redis OSS/Valkey SLOWLOG or Redis OSS/Valkey Engine Log"
+  type        = any
+  default = {
+    slow-log = {
+      destination_type = "cloudwatch-logs"
+      log_format       = "json"
+    }
+  }
 }
 
 variable "retention_in_days" {
@@ -199,4 +204,89 @@ variable "parameter_group_family" {
   description = "The engine version that the parameter group can be used with"
   type        = string
   default     = "redis7"
+}
+
+variable "replication_group_id" {
+  description = "Replication group identifier. When `create_replication_group` is set to `true`, this is the ID assigned to the replication group created. When `create_replication_group` is set to `false`, this is the ID of an externally created replication group"
+  type        = string
+  default     = null
+}
+
+variable "availability_zone" {
+  description = "Availability Zone for the cache cluster. If you want to create cache nodes in multi-az, use `preferred_availability_zones` instead"
+  type        = string
+  default     = null
+}
+
+variable "cluster_id" {
+  description = "Group identifier. ElastiCache converts this name to lowercase. Changing this value will re-create the resource"
+  type        = string
+  default     = ""
+}
+
+variable "final_snapshot_identifier" {
+  description = "(Redis only) Name of your final cluster snapshot. If omitted, no final snapshot will be made"
+  type        = string
+  default     = null
+}
+
+variable "ip_discovery" {
+  description = "The IP version to advertise in the discovery protocol. Valid values are `ipv4` or `ipv6`"
+  type        = string
+  default     = null
+}
+
+variable "az_mode" {
+  description = "Whether the nodes in this Memcached node group are created in a single Availability Zone or created across multiple Availability Zones in the cluster's region. Valid values for this parameter are `single-az` or `cross-az`, default is `single-az`"
+  type        = string
+  default     = null
+}
+
+variable "network_type" {
+  description = "The IP versions for cache cluster connections. Valid values are `ipv4`, `ipv6` or `dual_stack`"
+  type        = string
+  default     = null
+}
+
+variable "outpost_mode" {
+  description = "Specify the outpost mode that will apply to the cache cluster creation. Valid values are `single-outpost` and `cross-outpost`, however AWS currently only supports `single-outpost` mode"
+  type        = string
+  default     = null
+}
+
+variable "preferred_availability_zones" {
+  description = "List of the Availability Zones in which cache nodes are created"
+  type        = list(string)
+  default     = []
+}
+
+variable "preferred_outpost_arn" {
+  description = "(Required if `outpost_mode` is specified) The outpost ARN in which the cache cluster will be created"
+  type        = string
+  default     = null
+}
+
+variable "create_replication_group" {
+  description = "Determines whether an ElastiCache replication group will be created or not"
+  type        = bool
+  default     = true
+}
+
+variable "timeouts" {
+  description = "Define maximum timeout for creating, updating, and deleting cluster resource"
+  type        = map(string)
+  default     = {}
+}
+
+
+variable "engine" {
+  description = "ElastiCache engine type to use. Valid values: 'redis', 'valkey', or 'memcached'."
+  type        = string
+  default     = ""
+}
+
+variable "port" {
+  description = "The port number on which the cache engine accepts connections. Default is 11211 for Memcached and 6379 for Redis."
+  type        = number
+  default     = 11211
 }
