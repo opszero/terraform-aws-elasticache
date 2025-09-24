@@ -23,16 +23,13 @@ To use this module, you can include it in your Terraform configuration. Here's a
 
 ```hcl
 module "memcached" {
-  source                     = "git@github.com:opszero/terraform-aws-elasticache?ref=v1.0.1"
+  source                     = "git::https://github.com/opszero/terraform-aws-elasticache.git?ref=v1.0.1"
   name                       = "memcached"
-  vpc_id                     = module.vpc.vpc_id
-
   engine                     = "memcached"
   engine_version             = "1.6.17"
   node_type                  = "cache.t2.micro"
   num_cache_nodes            = 2
   subnet_ids                 = module.subnets.public_subnet_id
-  availability_zones         = ["eu-west-1a", "eu-west-1b"]
   automatic_failover_enabled = false
   security_group_ids         = []
   security_group_names       = null
@@ -43,15 +40,13 @@ module "memcached" {
 
 ```hcl
 module "redis" {
-  source                        = "git@github.com:opszero/terraform-aws-elasticache?ref=v1.0.1"
+  source                        = "git::https://github.com/opszero/terraform-aws-elasticache.git?ref=v1.0.1"
   name                          = "redis"
-  vpc_id                        = module.vpc.vpc_id
   engine                        = "redis"
   engine_version                = "7.0"
   port                          = 6379
   node_type                     = "cache.r6g.large"
   subnet_ids                    = module.subnets.public_subnet_id
-  availability_zones            = [""]
   automatic_failover_enabled    = false
   multi_az_enabled              = false
   num_cache_clusters            = 1
@@ -77,16 +72,13 @@ module "redis" {
 ## Example: redis-cluster
 ```hcl
 module "redis-cluster" {
-  source = "git@github.com:opszero/terraform-aws-elasticache?ref=v1.0.1"
-  name   = "redis-cluster"
-  vpc_id = module.vpc.vpc_id
-
+  source                        = "git::https://github.com/opszero/terraform-aws-elasticache.git?ref=v1.0.1"
+  name                          = "redis-cluster"
   engine                        = "redis"
   engine_version                = "7.0"
   port                          = 6379
   node_type                     = "cache.t2.micro"
   subnet_ids                    = module.subnets.public_subnet_id
-  availability_zones            = ["eu-west-1a", "eu-west-1b"]
   num_cache_nodes               = 1
   snapshot_retention_limit      = 7
   automatic_failover_enabled    = false
@@ -108,13 +100,13 @@ module "redis-cluster" {
 ```
 
 ## Examples
-For detailed examples on how to use this module, please refer to the examples directory within this repository.
+For detailed examples on how to use this module, please refer to the [Examples](https://github.com/opszero/terraform-aws-elasticache/tree/master/example) directory within this repository.
 
 ## Author
 Your Name Replace **MIT** and **opszero** with the appropriate license and your information. Feel free to expand this README with additional details or usage instructions as needed for your specific use case.
 
 ## License
-This project is licensed under the **MIT** License - see the LICENSE file for details.
+This project is licensed under the **MIT** License - see the [LICENSE](https://github.com/opszero/terraform-aws-elasticache/blob/master/LICENSE) file for details.
 
 <!-- BEGIN_TF_DOCS -->
 
@@ -123,7 +115,7 @@ This project is licensed under the **MIT** License - see the LICENSE file for de
 | Name | Version |
 |------|---------|
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.14.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | >= 3.0, < 4.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.7.2 |
 ## Inputs
 
 | Name | Description | Type | Default | Required |
@@ -134,9 +126,7 @@ This project is licensed under the **MIT** License - see the LICENSE file for de
 | <a name="input_auto_minor_version_upgrade"></a> [auto\_minor\_version\_upgrade](#input\_auto\_minor\_version\_upgrade) | Specifies whether a minor engine upgrades will be applied automatically to the underlying Cache Cluster instances during the maintenance window. Defaults to true. | `bool` | `true` | no |
 | <a name="input_automatic_failover_enabled"></a> [automatic\_failover\_enabled](#input\_automatic\_failover\_enabled) | Specifies whether a read-only replica will be automatically promoted to read/write primary if the existing primary fails. If true, Multi-AZ is enabled for this replication group. If false, Multi-AZ is disabled for this replication group. Must be enabled for Redis (cluster mode enabled) replication groups. Defaults to false. | `bool` | `true` | no |
 | <a name="input_availability_zone"></a> [availability\_zone](#input\_availability\_zone) | Availability Zone for the cache cluster. If you want to create cache nodes in multi-az, use `preferred_availability_zones` instead | `string` | `null` | no |
-| <a name="input_availability_zones"></a> [availability\_zones](#input\_availability\_zones) | A list of EC2 availability zones in which the replication group's cache clusters will be created. The order of the availability zones in the list is not important. | `list(string)` | n/a | yes |
 | <a name="input_az_mode"></a> [az\_mode](#input\_az\_mode) | Whether the nodes in this Memcached node group are created in a single Availability Zone or created across multiple Availability Zones in the cluster's region. Valid values for this parameter are `single-az` or `cross-az`, default is `single-az` | `string` | `null` | no |
-| <a name="input_cluster_id"></a> [cluster\_id](#input\_cluster\_id) | Group identifier. ElastiCache converts this name to lowercase. Changing this value will re-create the resource | `string` | `""` | no |
 | <a name="input_create_replication_group"></a> [create\_replication\_group](#input\_create\_replication\_group) | Determines whether an ElastiCache replication group will be created or not | `bool` | `true` | no |
 | <a name="input_deletion_window_in_days"></a> [deletion\_window\_in\_days](#input\_deletion\_window\_in\_days) | Duration in days after which the key is deleted after destruction of the resource. | `number` | `7` | no |
 | <a name="input_description"></a> [description](#input\_description) | Description for the cache subnet group. Defaults to `Managed by Terraform`. | `string` | `"The Description of the ElastiCache Subnet Group."` | no |
@@ -174,7 +164,6 @@ This project is licensed under the **MIT** License - see the LICENSE file for de
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(string)` | `{}` | no |
 | <a name="input_timeouts"></a> [timeouts](#input\_timeouts) | Define maximum timeout for creating, updating, and deleting cluster resource | `map(string)` | `{}` | no |
 | <a name="input_transit_encryption_enabled"></a> [transit\_encryption\_enabled](#input\_transit\_encryption\_enabled) | Specifies whether to enable encryption in transit. | `bool` | `false` | no |
-| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | The ID of the VPC that the instance security group belongs to. | `string` | `""` | no |
 ## Resources
 
 | Name | Type |
@@ -185,7 +174,7 @@ This project is licensed under the **MIT** License - see the LICENSE file for de
 | [aws_elasticache_replication_group.cluster](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_replication_group) | resource |
 | [aws_elasticache_subnet_group.default](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/elasticache_subnet_group) | resource |
 | [aws_kms_key.cloudwatch](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/kms_key) | resource |
-| [random_password.auth_token](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
+| [random_password.auth_token](https://registry.terraform.io/providers/hashicorp/random/3.7.2/docs/resources/password) | resource |
 ## Outputs
 
 | Name | Description |

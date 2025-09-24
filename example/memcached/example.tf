@@ -3,13 +3,13 @@ provider "aws" {
 }
 
 module "vpc" {
-  source     = "git@github.com:opszero/terraform-aws-vpc?ref=v1.0.1"
+  source     = "git::https://github.com/opszero/terraform-aws-vpc.git?ref=v1.0.1"
   name       = "test"
   cidr_block = "10.0.0.0/16"
 }
 
 module "subnets" {
-  source             = "git@github.com:opszero/terraform-aws-subnets?ref=v1.0.0"
+  source             = "git::https://github.com/opszero/terraform-aws-subnets.git?ref=v1.0.0"
   name               = "subnets"
   availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
@@ -22,16 +22,13 @@ module "subnets" {
 module "memcached" {
   source = "./../../"
   name   = "memcached"
-  vpc_id = module.vpc.vpc_id
 
   engine                     = "memcached"
   engine_version             = "1.6.17"
   node_type                  = "cache.t2.micro"
   num_cache_nodes            = 2
   subnet_ids                 = module.subnets.public_subnet_id
-  availability_zones         = ["eu-west-1a", "eu-west-1b"]
   automatic_failover_enabled = false
   security_group_ids         = []
   security_group_names       = null
-
 }

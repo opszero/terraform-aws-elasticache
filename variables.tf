@@ -98,11 +98,6 @@ variable "replication_group_description" {
   description = "Desc of either the  resource."
 }
 
-variable "availability_zones" {
-  type        = list(string)
-  description = "A list of EC2 availability zones in which the replication group's cache clusters will be created. The order of the availability zones in the list is not important."
-}
-
 variable "num_cache_clusters" {
   type        = number
   default     = 1
@@ -168,14 +163,6 @@ variable "deletion_window_in_days" {
   description = "Duration in days after which the key is deleted after destruction of the resource."
 }
 
-variable "vpc_id" {
-  type        = string
-  default     = ""
-  description = "The ID of the VPC that the instance security group belongs to."
-  sensitive   = true
-}
-
-
 variable "security_group_ids" {
   type        = list(any)
   default     = []
@@ -216,12 +203,6 @@ variable "availability_zone" {
   description = "Availability Zone for the cache cluster. If you want to create cache nodes in multi-az, use `preferred_availability_zones` instead"
   type        = string
   default     = null
-}
-
-variable "cluster_id" {
-  description = "Group identifier. ElastiCache converts this name to lowercase. Changing this value will re-create the resource"
-  type        = string
-  default     = ""
 }
 
 variable "final_snapshot_identifier" {

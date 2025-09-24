@@ -1,6 +1,15 @@
+locals {
+  in_replication_group = var.replication_group_id != null
+
+  security_group_ids = var.security_group_ids
+  port               = var.engine == "memcached" ? 11211 : 6379
+
+  tags = merge(var.tags, { terraform-aws-modules = "elasticache" })
+}
+
 resource "aws_kms_key" "cloudwatch" {
   description             = "KMS key for CloudWatch log group encryption"
-  deletion_window_in_days = 7
+  deletion_window_in_days = var.deletion_window_in_days
   enable_key_rotation     = true
 }
 
@@ -10,7 +19,6 @@ resource "aws_cloudwatch_log_group" "default" {
   kms_key_id        = aws_kms_key.cloudwatch.arn
   tags              = var.tags
 }
-
 
 resource "aws_elasticache_subnet_group" "default" {
   name        = var.name
@@ -64,18 +72,6 @@ resource "aws_elasticache_replication_group" "cluster" {
   }
 }
 
-
-
-
-locals {
-  in_replication_group = var.replication_group_id != null
-
-  security_group_ids = var.security_group_ids
-  port               = var.engine == "memcached" ? 11211 : 6379
-
-  tags = merge(var.tags, { terraform-aws-modules = "elasticache" })
-}
-
 resource "aws_elasticache_cluster" "this" {
   count = var.engine == "memcached" ? 1 : 0
 
@@ -127,7 +123,6 @@ resource "aws_elasticache_cluster" "this" {
     delete = try(var.timeouts.delete, null)
   }
 }
-
 
 resource "aws_elasticache_parameter_group" "default" {
   name   = var.name
