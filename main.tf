@@ -1,6 +1,13 @@
+resource "aws_kms_key" "cloudwatch" {
+  description             = "KMS key for CloudWatch log group encryption"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
 resource "aws_cloudwatch_log_group" "default" {
   name              = "${var.name}-elasticache"
   retention_in_days = var.retention_in_days
+  kms_key_id        = aws_kms_key.cloudwatch.arn
   tags              = var.tags
 }
 

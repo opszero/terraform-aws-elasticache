@@ -3,13 +3,13 @@ provider "aws" {
 }
 
 module "vpc" {
-  source     = "git@github.com:opszero/terraform-aws-vpc?ref=v1.0.0"
+  source     = "git@github.com:opszero/terraform-aws-vpc?ref=v1.0.1"
   name       = "test"
   cidr_block = "10.0.0.0/16"
 }
 
 module "subnets" {
-  source             = "git@github.com:opszero/terraform-aws-subnets?ref=main"
+  source             = "git@github.com:opszero/terraform-aws-subnets?ref=v1.0.0"
   name               = "subnets"
   availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
