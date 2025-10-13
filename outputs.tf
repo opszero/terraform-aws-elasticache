@@ -9,6 +9,10 @@ output "redis_endpoint" {
 }
 
 output "redis_arn" {
-  value       = aws_elasticache_replication_group.cluster.arn
-  description = "Redis arn"
+  value = (
+    length(aws_elasticache_replication_group.cluster) > 0 ?
+    aws_elasticache_replication_group.cluster[0].arn :
+    null
+  )
 }
+
