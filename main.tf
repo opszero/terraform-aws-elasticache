@@ -1,3 +1,6 @@
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
 locals {
   in_replication_group = var.replication_group_id != null
 
@@ -11,6 +14,41 @@ resource "aws_kms_key" "cloudwatch" {
   description             = "KMS key for CloudWatch log group encryption"
   deletion_window_in_days = var.deletion_window_in_days
   enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "Enable IAM User Permissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow CloudWatch Logs"
+        Effect = "Allow"
+        Principal = {
+          Service = "logs.${data.aws_region.current.name}.amazonaws.com"
+        }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+        Condition = {
+          ArnEquals = {
+            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:log-group:${var.name}-elasticache"
+          }
+        }
+      }
+    ]
+  })
 }
 
 resource "aws_cloudwatch_log_group" "default" {
@@ -34,7 +72,7 @@ resource "random_password" "auth_token" {
 }
 
 resource "aws_elasticache_replication_group" "cluster" {
-  count                      = var.engine == "redis" && var.create_replication_group ? 1 : 0
+  count                      = (var.engine == "redis" || var.engine == "valkey") && var.create_replication_group ? 1 : 0
   engine                     = var.engine
   replication_group_id       = var.name
   description                = var.replication_group_description
@@ -106,7 +144,7 @@ resource "aws_elasticache_cluster" "this" {
   port                         = local.in_replication_group ? null : coalesce(var.port, local.port)
   preferred_availability_zones = var.preferred_availability_zones
   preferred_outpost_arn        = var.preferred_outpost_arn
-  replication_group_id         = var.engine == "redis" && var.create_replication_group ? aws_elasticache_replication_group.cluster[0].id : null
+  replication_group_id         = (var.engine == "redis" || var.engine == "valkey") && var.create_replication_group ? aws_elasticache_replication_group.cluster[0].id : null
   security_group_ids           = local.in_replication_group ? null : local.security_group_ids
   snapshot_arns                = local.in_replication_group ? null : var.snapshot_arns
   snapshot_name                = local.in_replication_group ? null : var.snapshot_name
