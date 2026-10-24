@@ -271,3 +271,9 @@ variable "port" {
   type        = number
   default     = 11211
 }
+
+variable "user_group_ids" {
+  type        = list(string)
+  default     = null
+  description = "User Group ID to associate with the replication group. Only a maximum of one (1) user group ID is valid."
+}
