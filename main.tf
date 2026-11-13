@@ -95,6 +95,7 @@ resource "aws_elasticache_replication_group" "cluster" {
   transit_encryption_enabled = var.transit_encryption_enabled
   multi_az_enabled           = var.multi_az_enabled
   auth_token                 = var.auth_token_enabled ? (var.auth_token == null ? random_password.auth_token[0].result : var.auth_token) : null
+  user_group_ids             = var.user_group_ids
   tags                       = var.tags
   num_cache_clusters         = var.num_cache_clusters
 
